@@ -309,6 +309,89 @@ inline.pedantic = merge({}, inline.normal, {
     .getRegex()
 });
 
+
+/**
+ * Remarkup Inline Grammar
+ */
+
+inline.remarkup = merge({}, inline.normal, {
+
+  // @\\*\\*(.+?)\\*\\*@s
+
+  // @(?<!~)~~([^\s~].*?~*)~~@s delete 
+
+  // @\B\\[\\[([^|\\]]+)(?:\\|([^\\]]+))?\\]\\]\B@U doc
+
+  // @(?<!:)//(.+?)//@s Italic
+
+  // @##([\s\S]+?)##|\B`(.+?)`@ ##monospaced##
+
+  // @(?<!_|/)__([^\s_/].*?_*)__(?!/|\.\S)@s underline
+
+  // (@{config:([^}]+)})  markupConfig
+
+  // @{key\b((?:[^}\\\\]+|\\\\.)*)}@m  markupKeystrokes
+
+  // @{nav\b((?:[^}\\\\]+|\\\\.)*)}@m markupNavigation
+
+  // (\B{'.$prefix.'('.$id.')([,\s](?:[^}\\\\]|\\\\.)*)?}\B)u getObjectEmbedPattern
+  
+  // '[1-9]\d*' getObjectIDPattern
+
+  // ((?<![#@-])'.$boundary.$prefix.'('.$id.')(?:#([-\w\d]+))?(?!\w))u referencePattern
+
+  // 
+  strong: {
+    start: /^\*\*/,
+    middle: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+    endAst: /\*\*(?!\*)/g,
+    endUnd: /\*\*(?!\*)/g
+  },
+
+  italic: {
+    start: /^\/\//,
+    middle: /^\/\/(?=\S)([\s\S]*?\S)\/\/(?!\/)/,
+    endAst: /\/\/(?!\/)/g,
+    endUnd: /\/\/(?!\/)/g
+  },
+  // ##([\s\S]+?)##|\B`(.+?)`
+  monospaced: {
+    start: /^`/,
+    middle: /^`(?=\S)([\s\S]*?\S)`(?!`)/,
+    endAst: /`(?!`)/g,
+    endUnd: /`(?!`)/g
+  },
+
+  underlined : {
+    start: /^__/,
+    middle: /^__(?=\S)([\s\S]*?\S)__(?!_)/,
+    endAst: /__(?!_)/g,
+    endUnd: /__(?!_)/g
+  },
+
+  // @!!(.+?)(!{2,})@
+  highlighted: {
+
+    start: /^\!\!/,
+    middle: /^\!\!(?=\S)([\s\S]*?\S)\!\!(?!\!)/,
+    endAst: /\!\!(?!\!)/g,
+    endUnd: /\!\!(?!\!)/g
+  },
+
+  em: {
+    start: /^_|\*/,
+    middle: /^()\*(?=\S)([\s\S]*?\S)\*(?!\*)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
+    endAst: /\*(?!\*)/g,
+    endUnd: /_(?!_)/g
+  },
+  link: edit(/^!?\[(label)\]\((.*?)\)/)
+    .replace('label', inline._label)
+    .getRegex(),
+  reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/)
+    .replace('label', inline._label)
+    .getRegex()
+});
+
 /**
  * GFM Inline Grammar
  */
